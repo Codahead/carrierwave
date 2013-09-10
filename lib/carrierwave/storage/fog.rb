@@ -288,19 +288,8 @@ module CarrierWave
             # AWS/Google optimized for speed over correctness
             case @uploader.fog_credentials[:provider]
             when 'AWS'
-              # check if some endpoint is set in fog_credentials
-              if @uploader.fog_credentials.has_key?(:endpoint)
-                "#{@uploader.fog_credentials[:endpoint]}/#{@uploader.fog_directory}/#{encoded_path}"
-              else
-                protocol = @uploader.fog_use_ssl_for_aws ? "https" : "http"
-                # if directory is a valid subdomain, use that style for access
-                if @uploader.fog_directory.to_s =~ /^(?:[a-z]|\d(?!\d{0,2}(?:\d{1,3}){3}$))(?:[a-z0-9\.]|(?![\-])|\-(?![\.])){1,61}[a-z0-9]$/
-                  "#{protocol}://#{@uploader.fog_directory}.s3.amazonaws.com/#{encoded_path}"
-                else
-                  # directory is not a valid subdomain, so use path style for access
-                  "#{protocol}://s3.amazonaws.com/#{@uploader.fog_directory}/#{encoded_path}"
-                end
-              end
+              # author: Jeffrey Noh
+              "https://s3.amazonaws.com/#{@uploader.fog_directory}/#{path}"
             when 'Google'
               "https://commondatastorage.googleapis.com/#{@uploader.fog_directory}/#{encoded_path}"
             else
